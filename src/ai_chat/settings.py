@@ -25,6 +25,11 @@ class Settings(BaseModel):
         description="Anthropic API key for Claude models"
     )
 
+    openai_base_url: str | None = Field(
+        default=None,
+        description="Custom OpenAI API base URL (e.g., for MiniMax)"
+    )
+
     model: str = Field(
         default="gpt-4",
         description="Default LLM model to use"

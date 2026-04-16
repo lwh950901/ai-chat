@@ -29,12 +29,14 @@
 ## OpenSpec Changes
 - 2026-04-16-init-ai-chat-project-structure (archived)
 - 2026-04-16-add-langchain-dependency (archived)
-- implement-config-management (待归档)
+- 2026-04-16-implement-config-management (archived)
+- implement-llm-clients (待归档)
 
 ## 开发习惯
 - 每次开发新功能前先创建 OpenSpec change
 - 使用 /opsx:propose 创建完整 artifacts
 - 实现完成后及时归档 changes
 - 使用 self-improving-agent 记录错误和学习
+- **每完成一个小需求都要测试一下代码是否可以跑通**
 - **每完成一个 OpenSpec change 后更新 memory 文件夹内容**
 - **每完成一个 OpenSpec change 后更新 README.md**
