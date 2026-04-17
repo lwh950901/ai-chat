@@ -29,17 +29,28 @@
 - OpenSpec 系列: ai-chat/.claude/skills/openspec-*/
 
 ## OpenSpec Changes
+### 2026-04-16 (初始实现)
 - 2026-04-16-init-ai-chat-project-structure (archived)
 - 2026-04-16-add-langchain-dependency (archived)
 - 2026-04-16-implement-config-management (archived)
 - 2026-04-16-implement-llm-clients (archived)
 - 2026-04-16-implement-api-interface (archived)
 - 2026-04-16-implement-conversation-management (archived)
-- implement-cli-interface (待实现)
-- implement-langchain-agent (待实现)
-- implement-rag-support (待实现)
-- implement-conversation-memory (待实现)
-- implement-tool-calling (待实现)
+
+### 2026-04-17 (Bug 修复与架构优化)
+- 2026-04-17-fix-config-loading-order (archived) — get_settings() 单例，.env 自动加载
+- 2026-04-17-fix-provider-default-model (archived) — 按 provider 维度定义默认模型
+- 2026-04-17-fix-duplicate-message-bug (archived) — 修复多轮对话消息重复
+- 2026-04-17-fix-async-route-blocking (archived) — chat() 异步化 + to_thread()
+- 2026-04-17-fix-streaming-thread-and-settings-loading (archived) — _stream_sse 后台线程桥接
+- 2026-04-17-improve-dependency-injection (archived) — lifespan + app.state + Depends()
+- 2026-04-17-implement-cli-interface (archived) — CLI 命令行界面（Typer + Rich）
+
+### 待实现 Changes
+- implement-langchain-agent
+- implement-rag-support
+- implement-conversation-memory
+- implement-tool-calling
 
 ## 开发习惯
 - 每次开发新功能前先创建 OpenSpec change

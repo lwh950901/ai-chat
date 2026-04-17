@@ -11,6 +11,7 @@
 - 环境变量配置支持 ✓
 - LangChain 集成 ✓
 - LLM 客户端统一接口 ✓
+- CLI 命令行界面 ✓
 
 ## 安装
 
@@ -50,14 +51,10 @@ pip install -e .
 ### 配置模块使用
 
 ```python
-from src.ai_chat.config import load_config, get_env
-from src.ai_chat.settings import Settings
+from src.ai_chat.settings import get_settings
 
-# 加载配置
-load_config()
-
-# 创建设置实例
-settings = Settings()
+# 获取 Settings 单例（首次调用自动加载 .env）
+settings = get_settings()
 
 # 检查配置
 if settings.is_openai_configured():
@@ -65,27 +62,29 @@ if settings.is_openai_configured():
 
 if settings.is_anthropic_configured():
     print("Anthropic 已配置")
+
+# 获取 provider 默认模型
+model = settings.get_default_model("openai")   # gpt-4 或全局 MODEL
+model = settings.get_default_model("anthropic") # claude-3-sonnet-20240229
 ```
 
 ### LLM 客户端使用
 
 ```python
-from src.ai_chat.settings import Settings
+from src.ai_chat.settings import get_settings
 from src.ai_chat.clients import create_llm_client
 
-# 方式一：使用 Settings 创建客户端
-settings = Settings(
-    openai_api_key='your-api-key',
-    openai_base_url='https://api.minimaxi.com/v1'  # MiniMax
-)
+settings = get_settings()
+
+# OpenAI / MiniMax 客户端
 client = create_llm_client('openai', settings.openai_api_key, base_url=settings.openai_base_url)
 
 # 发送消息
-response = client.send_message("Hello!")
+response = client.send_message([{"role": "user", "content": "Hello!"}])
 print(response)
 
 # 流式响应
-for chunk in client.stream_message("Hello!"):
+for chunk in client.stream_message([{"role": "user", "content": "Hello!"}]):
     print(chunk, end='', flush=True)
 ```
 
@@ -163,6 +162,52 @@ const eventSource = new EventSource('/chat/stream', { method: 'POST' });
 // 使用 fetch + ReadableStream 更推荐
 ```
 
+## CLI 界面
+
+项目提供命令行界面，无需启动 API 服务器即可与 AI 对话。
+
+### 快速开始
+
+```bash
+# 安装后直接使用
+ai-chat "你好，AI！"
+
+# 进入交互模式
+ai-chat
+
+# 使用 Anthropic 模型
+ai-chat --provider anthropic "Hello"
+```
+
+### CLI 选项
+
+| 选项 | 说明 | 默认值 |
+|------|------|--------|
+| `MESSAGE` | 要发送的消息（省略则进入交互模式） | - |
+| `--provider` | LLM 提供商 (`openai` / `anthropic`) | `openai` |
+| `--model` | 模型名称 | provider 默认模型 |
+| `--stream` | 启用流式输出 | `false` |
+
+### 交互模式命令
+
+在交互模式下可用以下命令：
+
+| 命令 | 说明 |
+|------|------|
+| `exit` / `quit` / `q` | 退出交互模式 |
+| `history` | 显示当前会话历史 |
+| `clear` | 清除会话历史 |
+
+### CLI 子命令
+
+```bash
+# 查看历史
+ai-chat history
+
+# 清除历史
+ai-chat clear
+```
+
 ## 开发
 
 ```bash
@@ -184,27 +229,38 @@ ai-chat/
 ├── src/
 │   └── ai_chat/
 │       ├── __init__.py
-│       ├── config.py      # 配置加载 ✓
-│       ├── settings.py    # Pydantic 配置模型 ✓
-│       ├── clients/       # LLM 客户端 ✓
+│       ├── config.py           # 配置加载（简化版）
+│       ├── settings.py         # Pydantic Settings 单例（get_settings）
+│       ├── clients/            # LLM 客户端 ✓
 │       │   ├── __init__.py
-│       │   ├── base.py           # 抽象基类
-│       │   ├── openai_client.py  # OpenAI 客户端
-│       │   ├── anthropic_client.py # Anthropic 客户端
-│       │   └── factory.py        # 客户端工厂
-│       └── api/           # Web API 接口 ✓
+│       │   ├── base.py              # 抽象基类
+│       │   ├── openai_client.py     # OpenAI / MiniMax 客户端
+│       │   └── anthropic_client.py  # Anthropic 客户端
+│       ├── conversation/       # 对话管理 ✓
+│       │   ├── __init__.py
+│       │   ├── models.py            # 消息模型（Role, Conversation）
+│       │   ├── store.py             # 会话存储（InMemoryConversationStore）
+│       │   └── service.py           # 聊天服务（async + asyncio.to_thread）
+│       ├── api/              # Web API ✓
+│       │   ├── __init__.py
+│       │   ├── server.py            # FastAPI 主入口（lifespan 管理资源）
+│       │   ├── dependencies.py       # DI 依赖函数
+│       │   ├── models.py            # 请求/响应模型
+│       │   └── routes/
+│       │       └── chat.py          # 聊天端点（_stream_sse 后台线程桥接）
+│       └── cli/               # CLI 界面 ✓
 │           ├── __init__.py
-│           ├── server.py        # FastAPI 主入口
-│           ├── models.py        # 请求/响应模型
-│           └── routes/
-│               └── chat.py      # 聊天端点
-├── tests/                # 测试文件
-├── config/               # 配置文件
-├── docs/                 # 文档
-├── openspec/             # OpenSpec 工作流
-├── pyproject.toml        # 项目配置
-├── requirements.txt      # 依赖列表
-├── .env.example          # 环境变量模板 ✓
+│           ├── main.py              # Typer 主入口
+│           └── factory.py           # LLM 客户端工厂
+├── tests/                 # 测试文件 ✓
+│   ├── test_settings.py
+│   ├── test_conversation_service.py
+│   ├── test_chat_streaming.py
+│   └── test_cli.py             # CLI 测试
+├── openspec/              # OpenSpec 工作流
+├── pyproject.toml         # 项目配置
+├── requirements.txt       # 依赖列表
+├── .env.example           # 环境变量模板 ✓
 └── README.md
 ```
 
@@ -223,12 +279,13 @@ ai-chat/
 
 - [x] 项目初始化
 - [x] 添加 LangChain 依赖
-- [x] 配置管理模块 (config.py, settings.py)
+- [x] 配置管理模块 (get_settings() 单例)
 - [x] LLM 客户端 (OpenAI, Anthropic, MiniMax)
 - [x] Web API 接口 (FastAPI)
-- [x] 对话管理
-- [ ] CLI 界面
-- [ ] 单元测试
+- [x] 对话管理（多轮对话）
+- [x] 单元测试
+- [x] 依赖注入重构（lifespan + app.state + Depends）
+- [x] CLI 界面
 - [ ] LangChain Agent
 - [ ] RAG 支持
 - [ ] 多轮对话记忆
