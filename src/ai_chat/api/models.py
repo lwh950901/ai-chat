@@ -9,7 +9,7 @@ class ChatRequest(BaseModel):
     """聊天请求模型。"""
 
     message: str = Field(..., description="用户发送的消息")
-    provider: Optional[str] = Field(default="openai", description="LLM 提供商 (openai/anthropic)")
+    provider: Optional[str] = Field(default="openai", description="LLM 提供商 (openai/anthropic/agent)")
     model: Optional[str] = Field(default=None, description="模型名称（可选）")
     system_prompt: Optional[str] = Field(default=None, description="系统提示词（可选）")
     conversation_id: Optional[str] = Field(default=None, description="会话 ID（None 表示新会话）")

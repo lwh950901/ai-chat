@@ -170,21 +170,24 @@ const eventSource = new EventSource('/chat/stream', { method: 'POST' });
 
 ```bash
 # 安装后直接使用
-ai-chat "你好，AI！"
+ai-chat main "你好，AI！"
 
 # 进入交互模式
-ai-chat
+ai-chat-interactive
 
 # 使用 Anthropic 模型
-ai-chat --provider anthropic "Hello"
+ai-chat main "Hello" --provider anthropic
+
+# 使用 Agent 模式（可调用工具）
+ai-chat main "What's 15 * 23?" --provider agent
 ```
 
 ### CLI 选项
 
 | 选项 | 说明 | 默认值 |
 |------|------|--------|
-| `MESSAGE` | 要发送的消息（省略则进入交互模式） | - |
-| `--provider` | LLM 提供商 (`openai` / `anthropic`) | `openai` |
+| `MESSAGE` (main 命令) | 要发送的消息 | - |
+| `--provider` | LLM 提供商 (`openai` / `anthropic` / `agent`) | `openai` |
 | `--model` | 模型名称 | provider 默认模型 |
 | `--stream` | 启用流式输出 | `false` |
 
@@ -201,11 +204,30 @@ ai-chat --provider anthropic "Hello"
 ### CLI 子命令
 
 ```bash
+# 发送单条消息
+ai-chat main "Hello"
+
+# 进入交互模式
+ai-chat-interactive
+
 # 查看历史
 ai-chat history
 
 # 清除历史
 ai-chat clear
+```
+
+### Agent 模式
+
+使用 `--provider agent` 启用 LangChain Agent 模式，AI 可以调用内置工具：
+
+- **calculator**: 数学计算（支持加减乘除、指数、三角函数）
+- **datetime**: 获取当前 UTC 时间
+
+示例：
+```bash
+ai-chat main "What's (2 + 3) * 10?" --provider agent
+ai-chat main "What time is it now?" --provider agent --stream
 ```
 
 ## 开发
@@ -252,6 +274,12 @@ ai-chat/
 │           ├── __init__.py
 │           ├── main.py              # Typer 主入口
 │           └── factory.py           # LLM 客户端工厂
+│       └── agent/             # LangChain Agent ✓
+│           ├── __init__.py
+│           ├── client.py            # Agent 客户端
+│           ├── factory.py           # Agent 工厂函数
+│           ├── service.py          # Agent 服务封装
+│           └── tools.py           # 内置工具集
 ├── tests/                 # 测试文件 ✓
 │   ├── test_settings.py
 │   ├── test_conversation_service.py
@@ -277,19 +305,9 @@ ai-chat/
 
 ## 开发进度
 
-- [x] 项目初始化
-- [x] 添加 LangChain 依赖
-- [x] 配置管理模块 (get_settings() 单例)
-- [x] LLM 客户端 (OpenAI, Anthropic, MiniMax)
-- [x] Web API 接口 (FastAPI)
-- [x] 对话管理（多轮对话）
-- [x] 单元测试
-- [x] 依赖注入重构（lifespan + app.state + Depends）
-- [x] CLI 界面
-- [ ] LangChain Agent
-- [ ] RAG 支持
-- [ ] 多轮对话记忆
-- [ ] 工具调用
+查看已完成变更：https://github.com/ElvisLaw/ai-chat/tree/main/openspec/changes/archive
+
+查看待处理功能计划：[ai-chat-project-plan.md](.claude/memory/ai-chat-project-plan.md)
 
 ## License
 

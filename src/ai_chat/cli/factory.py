@@ -28,6 +28,13 @@ def create_llm_client_factory(settings: Settings) -> Callable[[str], Any]:
                 "anthropic",
                 settings.anthropic_api_key,
             )
+        elif provider == "agent":
+            return create_llm_client(
+                "agent",
+                settings.openai_api_key,
+                model=settings.get_default_model("openai"),
+                base_url=settings.openai_base_url,
+            )
         else:
             raise ValueError(f"Unsupported provider: {provider}")
 

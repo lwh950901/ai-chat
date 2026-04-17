@@ -39,6 +39,12 @@ def _get_llm_client(provider: str) -> object:
             if not api_key:
                 raise RuntimeError("Anthropic API key not configured")
             return create_llm_client("anthropic", api_key)
+        elif provider == "agent":
+            # Agent 使用 OpenAI API key（如果配置了）
+            api_key = settings.openai_api_key
+            base_url = settings.openai_base_url
+            model = settings.get_default_model("openai")
+            return create_llm_client("agent", api_key, model=model, base_url=base_url)
         else:
             raise RuntimeError(f"Unsupported provider: {provider}")
     except ConfigurationError as e:

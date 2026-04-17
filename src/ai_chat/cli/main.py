@@ -14,6 +14,9 @@ from .factory import create_llm_client_factory
 
 console = Console()
 
+# 创建主 Typer app
+app = typer.Typer(help="AI Chat CLI - 与 AI 对话的终端界面")
+
 
 class CLIChatService:
     """CLI 专用的 ChatService 封装。"""
@@ -96,41 +99,24 @@ def get_chat_service() -> CLIChatService:
     return _chat_service
 
 
-# 创建主 Typer app
-app = typer.Typer(
-    name="ai-chat",
-    help="AI Chat CLI - 与 AI 对话的终端界面",
-    add_completion=False,
-    invoke_without_command=True,
-)
-
-
-@app.callback(invoke_without_command=True)
-def callback(
-    ctx: typer.Context,
-    message: Annotated[str | None, typer.Argument(help="要发送的消息（省略则进入交互模式）")] = None,
-    provider: Annotated[str, typer.Option(help="LLM 提供商", case_sensitive=False)] = "openai",
+@app.command()
+def main(
+    message: Annotated[str, typer.Argument(help="要发送的消息")],
+    provider: Annotated[str, typer.Option(help="LLM 提供商 (openai/anthropic/agent)", case_sensitive=False)] = "openai",
     model: Annotated[str | None, typer.Option(help="模型名称")] = None,
     stream: Annotated[bool, typer.Option(help="启用流式输出")] = False,
 ) -> None:
-    """AI Chat CLI - 与 AI 对话。
+    """发送单条消息给 AI。
 
     用法:
-        ai-chat "你好"              # 单次问答
-        ai-chat                      # 交互模式
-        ai-chat --provider anthropic # 使用 Anthropic
-        ai-chat --stream            # 流式输出
+        ai-chat "你好"
+        ai-chat "你好" --provider agent
     """
-    # 如果有子命令被调用，忽略回调
-    if ctx.invoked_subcommand is not None:
-        return
-
     settings = get_settings()
 
     # 验证 provider
-    if provider not in ("openai", "anthropic"):
+    if provider not in ("openai", "anthropic", "agent"):
         console.print(f"[red]不支持的 provider: {provider}[/red]")
-        console.print("支持的 provider: openai, anthropic")
         raise typer.Exit(1)
 
     # 验证 API key
@@ -142,13 +128,47 @@ def callback(
         console.print("[red]Anthropic API key 未配置[/red]")
         console.print("请设置 ANTHROPIC_API_KEY 环境变量")
         raise typer.Exit(1)
+    if provider == "agent" and not settings.is_openai_configured():
+        console.print("[red]Agent 模式需要 OpenAI API key[/red]")
+        console.print("请设置 OPENAI_API_KEY 环境变量")
+        raise typer.Exit(1)
 
-    # 单次问答模式
-    if message:
-        _run_single_message(message, provider, model, stream)
-        return
+    _run_single_message(message, provider, model, stream)
 
-    # 交互模式
+
+@app.command()
+def interactive(
+    provider: Annotated[str, typer.Option(help="LLM 提供商 (openai/anthropic/agent)", case_sensitive=False)] = "openai",
+    model: Annotated[str | None, typer.Option(help="模型名称")] = None,
+    stream: Annotated[bool, typer.Option(help="启用流式输出")] = False,
+) -> None:
+    """进入交互模式。
+
+    用法:
+        ai-chat-interactive
+        ai-chat-interactive --provider agent
+    """
+    settings = get_settings()
+
+    # 验证 provider
+    if provider not in ("openai", "anthropic", "agent"):
+        console.print(f"[red]不支持的 provider: {provider}[/red]")
+        raise typer.Exit(1)
+
+    # 验证 API key
+    if provider == "openai" and not settings.is_openai_configured():
+        console.print("[red]OpenAI API key 未配置[/red]")
+        console.print("请设置 OPENAI_API_KEY 环境变量")
+        raise typer.Exit(1)
+    if provider == "anthropic" and not settings.is_anthropic_configured():
+        console.print("[red]Anthropic API key 未配置[/red]")
+        console.print("请设置 ANTHROPIC_API_KEY 环境变量")
+        raise typer.Exit(1)
+    if provider == "agent" and not settings.is_openai_configured():
+        console.print("[red]Agent 模式需要 OpenAI API key[/red]")
+        console.print("请设置 OPENAI_API_KEY 环境变量")
+        raise typer.Exit(1)
+
     _run_interactive(provider, model, stream)
 
 
@@ -243,7 +263,6 @@ def _show_history(service: CLIChatService) -> None:
         console.print(content)
 
 
-# 注册子命令
 @app.command(name="history")
 def history_cmd() -> None:
     """显示当前会话的对话历史。"""

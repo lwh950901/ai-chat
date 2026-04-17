@@ -8,9 +8,10 @@ from .openai_client import OpenAIClient
 
 
 def create_llm_client(
-    provider: Literal["openai", "anthropic"],
+    provider: Literal["openai", "anthropic", "agent"],
     api_key: str,
     model: str | None = None,
+    base_url: str | None = None,
     **kwargs,
 ) -> BaseLLMClient:
     """创建指定提供商的 LLM 客户端。
@@ -19,6 +20,7 @@ def create_llm_client(
         provider: LLM 提供商名称（"openai" 或 "anthropic"）。
         api_key: 提供商的 API 密钥。
         model: 可选的模型覆盖。
+        base_url: 可选的 API base URL（例如用于 MiniMax）。
         **kwargs: 提供商特定的其他参数。
 
     Returns:
@@ -29,11 +31,14 @@ def create_llm_client(
         ConfigurationError: 缺少必要配置。
     """
     if provider == "openai":
-        return OpenAIClient(api_key=api_key, model=model or "gpt-4", **kwargs)
+        return OpenAIClient(api_key=api_key, model=model or "gpt-4", base_url=base_url, **kwargs)
     elif provider == "anthropic":
         return AnthropicClient(api_key=api_key, model=model or "claude-3-sonnet-20240229", **kwargs)
+    elif provider == "agent":
+        from ..agent.client import create_agent_client
+        return create_agent_client(api_key=api_key, model=model, base_url=base_url, **kwargs)
     else:
-        raise ValueError(f"Unsupported provider: {provider}. Use 'openai' or 'anthropic'.")
+        raise ValueError(f"Unsupported provider: {provider}. Use 'openai', 'anthropic', or 'agent'.")
 
 
 def create_openai_client(api_key: str, model: str = "gpt-4", **kwargs) -> OpenAIClient:
