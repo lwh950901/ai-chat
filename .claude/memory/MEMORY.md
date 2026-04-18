@@ -48,8 +48,10 @@
 - 2026-04-17-implement-rag-support (archived) — RAG 支持（文档加载/分割/向量存储/检索）
 - 2026-04-17-refactor-project-structure (archived) — 项目结构重构（src/ai_chat → app）
 
+### 2026-04-18 (对话记忆功能)
+- 2026-04-18-implement-conversation-memory (archived) — 对话持久化、缓冲、摘要
+
 ### 待实现 Changes
-- implement-conversation-memory — 多轮对话记忆
 - implement-tool-calling — 工具调用功能
 
 ## 开发习惯
