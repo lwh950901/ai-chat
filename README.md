@@ -12,6 +12,10 @@
 - LangChain 集成 ✓
 - LLM 客户端统一接口 ✓
 - CLI 命令行界面 ✓
+- **对话记忆持久化**（JSON 文件存储）✓
+- **对话缓冲管理**（按消息数量和 Token 限制）✓
+- **对话摘要生成**（自动长对话摘要）✓
+- **会话历史管理**（CLI/API 查看、清除）✓
 
 ## 安装
 
@@ -128,6 +132,9 @@ uvicorn app.api:app --reload --host 0.0.0.0 --port 8000
 | `/health` | GET | 健康检查 |
 | `/chat` | POST | 同步聊天 |
 | `/chat/stream` | POST | 流式 SSE 聊天 |
+| `/conversations` | GET | 获取会话历史列表 |
+| `/conversations/{id}` | DELETE | 删除指定会话 |
+| `/conversations/{id}/history` | GET | 获取会话消息历史 |
 
 ### 测试 API
 
@@ -263,7 +270,8 @@ ai-chat/
 │   ├── conversation/       # 对话管理 ✓
 │   │   ├── __init__.py
 │   │   ├── models.py            # 消息模型（Role, Conversation）
-│   │   ├── store.py             # 会话存储（InMemoryConversationStore）
+│   │   ├── store.py             # 会话存储（InMemory + FileConversationStore）
+│   │   ├── memory.py            # 对话缓冲和摘要（ConversationBuffer + MemorySummarizer）
 │   │   └── service.py           # 聊天服务（async + asyncio.to_thread）
 │   ├── api/              # Web API ✓
 │   │   ├── __init__.py
@@ -272,6 +280,7 @@ ai-chat/
 │   │   ├── models.py            # 请求/响应模型
 │   │   └── routes/
 │   │       ├── chat.py          # 聊天端点
+│   │       ├── conversation.py   # 会话历史端点
 │   │       └── rag.py           # RAG 端点
 │   ├── cli/               # CLI 界面 ✓
 │   │   ├── __init__.py

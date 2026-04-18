@@ -11,9 +11,9 @@ originSessionId: fc845397-edf5-4bb1-b74a-b4db1e5a3c41
 
 ---
 
-### 待处理 Changes（按优先级）
+### 已完成 Changes
 
-#### 1. implement-conversation-memory
+#### implement-conversation-memory ✓ (2026-04-18)
 多轮对话记忆
 
 **Capabilities:**
@@ -23,7 +23,9 @@ originSessionId: fc845397-edf5-4bb1-b74a-b4db1e5a3c41
 
 ---
 
-#### 2. implement-tool-calling
+### 待处理 Changes（按优先级）
+
+#### 1. implement-tool-calling
 工具调用功能
 
 **Capabilities:**
