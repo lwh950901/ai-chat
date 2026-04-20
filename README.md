@@ -179,17 +179,25 @@ const eventSource = new EventSource('/chat/stream', { method: 'POST' });
 ### 快速开始
 
 ```bash
-# 安装后直接使用
+# 激活虚拟环境
+source .venv/bin/activate
+
+# 发送单条消息
 ai-chat main "你好，AI！"
 
 # 进入交互模式
-ai-chat-interactive
+ai-chat interactive
 
 # 使用 Anthropic 模型
 ai-chat main "Hello" --provider anthropic
 
 # 使用 Agent 模式（可调用工具）
 ai-chat main "What's 15 * 23?" --provider agent
+```
+
+**注意**：如果 `ai-chat` 命令未找到，请先安装包：
+```bash
+.venv/bin/python -m pip install -e .
 ```
 
 ### CLI 选项
@@ -218,7 +226,7 @@ ai-chat main "What's 15 * 23?" --provider agent
 ai-chat main "Hello"
 
 # 进入交互模式
-ai-chat-interactive
+ai-chat interactive
 
 # 查看历史
 ai-chat history

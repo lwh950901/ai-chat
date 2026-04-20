@@ -51,8 +51,12 @@
 ### 2026-04-18 (对话记忆功能)
 - 2026-04-18-implement-conversation-memory (archived) — 对话持久化、缓冲、摘要
 
+### 2026-04-20 (工具调用功能)
+- 2026-04-20-implement-tool-calling (archived) — 工具调用基础设施（BaseTool ABC、ToolRegistry、LangChain 适配器）
+- 2026-04-20-fix-tool-calling-code-review-issues (archived) — 线程安全修复、AST 验证补全、LangChain 适配器修复
+
 ### 待实现 Changes
-- implement-tool-calling — 工具调用功能
+（暂无）
 
 ## 开发习惯
 - 每次开发新功能前先创建 OpenSpec change

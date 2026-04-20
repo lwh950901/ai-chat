@@ -1,0 +1,27 @@
+name: implement-tool-calling
+displayName: 实现通用 Tool-Calling 基础设施
+schema: spec-driven
+createdAt: 2026-04-20
+artifacts:
+  - id: proposal
+    status: done
+    path: proposal.md
+  - id: design
+    status: done
+    path: design.md
+  - id: specs/tool-base
+    status: done
+    path: specs/tool-base/spec.md
+  - id: specs/tool-registry
+    status: done
+    path: specs/tool-registry/spec.md
+  - id: specs/tool-adapter
+    status: done
+    path: specs/tool-adapter/spec.md
+  - id: tasks
+    status: done
+    path: tasks.md
+applyRequires:
+  - proposal
+  - design
+  - tasks

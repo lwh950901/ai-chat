@@ -5,7 +5,7 @@ from typing import Any
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 
-from .tools import calculator, get_datetime
+from ..tools import ToolRegistry, create_langchain_tools
 
 
 def create_langchain_agent(model_name: str = "gpt-4", **model_kwargs: Any):
@@ -21,13 +21,14 @@ def create_langchain_agent(model_name: str = "gpt-4", **model_kwargs: Any):
     # 使用 ChatOpenAI
     llm = ChatOpenAI(model=model_name, **model_kwargs)
 
-    # 获取工具
-    tools = [calculator, get_datetime]
+    # 获取默认工具并转换为 LangChain 格式
+    default_tools = ToolRegistry.get_default_tools()
+    langchain_tools = create_langchain_tools(default_tools)
 
     # 创建 agent
     agent = create_agent(
         model=llm,
-        tools=tools,
+        tools=langchain_tools,
     )
 
     return agent

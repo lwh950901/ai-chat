@@ -11,27 +11,9 @@ originSessionId: fc845397-edf5-4bb1-b74a-b4db1e5a3c41
 
 ---
 
-### 已完成 Changes
+### 待处理 Changes
 
-#### implement-conversation-memory ✓ (2026-04-18)
-多轮对话记忆
-
-**Capabilities:**
-- `memory-buffer`: 对话缓冲
-- `memory-summary`: 对话摘要
-- `memory-persistence`: 记忆持久化
-
----
-
-### 待处理 Changes（按优先级）
-
-#### 1. implement-tool-calling
-工具调用功能
-
-**Capabilities:**
-- `tool-registry`: 工具注册表
-- `tool-executor`: 工具执行器
-- `tool-definitions`: 工具定义规范
+（暂无）
 
 ---
 

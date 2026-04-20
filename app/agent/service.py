@@ -2,12 +2,11 @@
 
 from typing import Any, Iterator
 
-from langchain.agents import create_agent
 from langchain_core.messages import HumanMessage
 from langchain_core.messages import AIMessage
 from langgraph.prebuilt import create_react_agent
 
-from .tools import calculator, get_datetime
+from ..tools import ToolRegistry, create_langchain_tools
 
 
 class AgentService:
@@ -22,10 +21,14 @@ class AgentService:
 
         Args:
             llm: LangChain 聊天模型实例。
-            tools: 工具列表，默认为 [calculator, get_datetime]。
+            tools: 工具列表，默认为 ToolRegistry 中的默认工具。
         """
         self._llm = llm
-        self._tools = tools or [calculator, get_datetime]
+        if tools is None:
+            default_tools = ToolRegistry.get_default_tools()
+            self._tools = create_langchain_tools(default_tools)
+        else:
+            self._tools = tools
         self._agent = create_react_agent(
             model=llm,
             tools=self._tools,

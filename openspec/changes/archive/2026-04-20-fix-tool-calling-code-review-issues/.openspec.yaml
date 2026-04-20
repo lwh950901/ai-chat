@@ -1,0 +1,14 @@
+name: fix-tool-calling-code-review-issues
+displayName: 修复 Tool-Calling Code Review 问题
+schema: spec-driven
+createdAt: 2026-04-20
+artifacts:
+  - id: proposal
+    status: done
+    path: proposal.md
+  - id: design
+    status: done
+    path: design.md
+  - id: tasks
+    status: done
+    path: tasks.md

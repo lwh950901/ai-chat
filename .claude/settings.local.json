@@ -60,7 +60,13 @@
       "Bash(curl -s -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"message\": \"继续对话\", \"provider\": \"openai\", \"conversation_id\": \"7748adba928d4733a5389112f76e3968\"}')",
       "Bash(curl -s -X DELETE http://localhost:8000/conversations/7748adba928d4733a5389112f76e3968)",
       "Bash(pkill -f \"uvicorn app.api.server:app\")",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(.venv/bin/python -m pytest tests/test_settings.py tests/test_conversation_service.py tests/test_memory_summarizer.py tests/test_conversation_buffer.py tests/test_file_conversation_store.py tests/test_conversation_memory_integration.py -v --tb=short)",
+      "Bash(.venv/bin/python -c \"import langchain; print\\('langchain OK'\\)\")",
+      "Bash(.venv/bin/python -c ' *)",
+      "Bash(.venv/bin/python -m app.cli.main --help)",
+      "Bash(.venv/bin/python -m pip install langchain-core langchain-openai langchain)",
+      "Bash(.venv/bin/python -m app.cli.main main \"What's 15 * 23?\" --provider agent)"
     ]
   }
 }
